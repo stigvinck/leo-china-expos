@@ -207,6 +207,78 @@
             .race-name { max-width: 200px; min-width: 140px; }
             .scroll-hint { display: block; }
         }
+        
+        /* Easter Egg Modal */
+        .easter-egg-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .easter-egg-modal.active {
+            display: flex;
+        }
+        .easter-egg-content {
+            background: #1a1a2e;
+            border: 3px solid #e94560;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            animation: rockOn 0.5s ease;
+        }
+        @keyframes rockOn {
+            0% { transform: scale(0.5) rotate(-5deg); opacity: 0; }
+            50% { transform: scale(1.1) rotate(2deg); }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+        .easter-egg-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #e94560;
+            margin-bottom: 20px;
+        }
+        .easter-egg-text {
+            color: #fff;
+            font-size: 22px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+        .easter-egg-subtext {
+            color: #e94560;
+            font-size: 14px;
+            font-style: italic;
+        }
+        .easter-egg-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+        .easter-egg-close:hover {
+            opacity: 1;
+        }
+        .easter-row {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .easter-row:hover {
+            background: #fff3f3 !important;
+        }
     </style>
 </head>
 <body>
@@ -463,6 +535,64 @@
         }
         
         render();
+        
+        // Easter Egg: Hidden Slash surprise for Leo
+        function showEasterEgg() {
+            document.getElementById('slash-modal').classList.add('active');
+        }
+        
+        function hideEasterEgg() {
+            document.getElementById('slash-modal').classList.remove('active');
+        }
+        
+        // Add hidden expo entry after render
+        (function addEasterEgg() {
+            const allView = document.getElementById('all-view');
+            if (allView) {
+                const easterSection = document.createElement('div');
+                easterSection.className = 'section';
+                easterSection.innerHTML = `
+                    <div class="section-header">
+                        <div class="section-title">🎸 Special Event</div>
+                        <span class="section-count">1</span>
+                    </div>
+                    <div class="table-container">
+                        <table class="expo-table">
+                            <thead><tr>
+                                <th>Expo Name</th>
+                                <th>Dates</th>
+                                <th>Category</th>
+                                <th>City</th>
+                                <th>Venue</th>
+                            </tr></thead>
+                            <tbody>
+                                <tr class="easter-row" onclick="showEasterEgg()">
+                                    <td class="expo-name"><a href="#" onclick="event.preventDefault(); showEasterEgg();">International Hat Collectors Expo 2026</a></td>
+                                    <td class="dates">TBA</td>
+                                    <td><span class="tag decor">🎨 Decor</span></td>
+                                    <td>Los Angeles</td>
+                                    <td class="venue">Sunset Strip Convention Center</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                allView.appendChild(easterSection);
+            }
+        })();
     </script>
+    
+    <!-- Easter Egg Modal -->
+    <div id="slash-modal" class="easter-egg-modal" onclick="if(event.target === this) hideEasterEgg();">
+        <div class="easter-egg-content">
+            <span class="easter-egg-close" onclick="hideEasterEgg()">✕</span>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Slash_performing_in_San_Francisco%2C_2012.jpg/440px-Slash_performing_in_San_Francisco%2C_2012.jpg" 
+                 alt="Slash" 
+                 class="easter-egg-image"
+                 onerror="this.src='https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'">
+            <div class="easter-egg-text">🎸 Hey Leo!</div>
+            <div class="easter-egg-subtext">Give me your hat! 🤠</div>
+        </div>
+    </div>
 </body>
 </html>
