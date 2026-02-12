@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>China Expo Finder for Leo</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏭</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: #f5f5f5; 
+            color: #333;
+            line-height: 1.6;
+        }
+        .header { 
+            background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%);
+            color: white;
+            padding: 20px 40px;
+            position: relative;
+        }
+        .header h1 { margin: 0; font-size: 26px; font-weight: 700; }
+        .header-sub { 
+            color: rgba(255,255,255,0.9); 
+            font-size: 14px; 
+            margin-top: 4px;
+        }
+        .nav {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 40px;
+            margin-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        .nav a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            margin-right: 25px;
+            font-size: 14px;
+            padding: 5px 0;
+        }
+        .nav a:hover {
+            color: white;
+            border-bottom: 2px solid white;
+        }
+        .nav a.active {
+            color: white;
+            border-bottom: 2px solid white;
+            font-weight: 600;
+        }
+        .info-btn {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .info-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .intro-box {
+            background: #fff;
+            padding: 15px 40px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .intro-box p {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+        }
+        .container { max-width: 1600px; margin: 0 auto; padding: 25px 40px; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab { 
+            padding: 10px 20px; 
+            background: #fff; 
+            border: 1px solid #ddd; 
+            border-radius: 6px; 
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .tab:hover { background: #f0f0f0; }
+        .tab.active { background: #2c5282; color: #fff; border-color: #2c5282; }
+        .section { 
+            background: #fff; 
+            border-radius: 10px; 
+            margin-bottom: 20px; 
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .section-header { 
+            background: #f8f9fa;
+            padding: 14px 20px; 
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-title { font-size: 16px; font-weight: 600; }
+        .section-count { 
+            background: #2c5282; 
+            color: white;
+            padding: 4px 12px; 
+            border-radius: 15px; 
+            font-size: 12px; 
+            font-weight: 600;
+        }
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .expo-table { 
+            width: 100%; 
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+        .expo-table th {
+            background: #f8f9fa;
+            padding: 12px 14px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            border-bottom: 2px solid #e0e0e0;
+            white-space: nowrap;
+        }
+        .expo-table th:first-child { padding-left: 20px; }
+        .expo-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            vertical-align: top;
+        }
+        .expo-table td:first-child { padding-left: 20px; }
+        .expo-table tr:hover { background: #fafafa; }
+        .tag { 
+            padding: 3px 10px; 
+            border-radius: 5px; 
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .tag.furniture { background: #e3f2fd; color: #1976d2; }
+        .tag.lighting { background: #fff3e0; color: #f57c00; }
+        .tag.kitchen { background: #e8f5e9; color: #388e3c; }
+        .tag.decor { background: #f3e5f5; color: #7b1fa2; }
+        .tag.bathroom { background: #e0f2f1; color: #00796b; }
+        .view { display: none; }
+        .view.active { display: block; }
+        .expo-name a { color: #2c5282; text-decoration: none; font-weight: 600; }
+        .expo-name a:hover { text-decoration: underline; }
+        .expo-name { max-width: 350px; min-width: 200px; word-wrap: break-word; }
+        .venue { font-size: 12px; color: #666; }
+        .dates { font-size: 12px; color: #666; white-space: nowrap; }
+        .updated { 
+            background: #fff; 
+            padding: 8px 40px; 
+            font-size: 11px; 
+            color: #999;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .scroll-hint {
+            display: none;
+            font-size: 11px;
+            color: #888;
+            padding: 6px 16px;
+            background: #fafafa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .info-panel {
+            display: none;
+            background: #fff;
+            padding: 30px 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .info-panel.active {
+            display: block;
+        }
+        .close-info {
+            position: fixed;
+            top: 20px;
+            right: 40px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 100;
+        }
+        .close-info:hover {
+            background: #fff;
+        }
+        @media (max-width: 768px) {
+            .header, .intro-box, .container { padding: 15px 20px; }
+            .header h1 { font-size: 22px; }
+            .info-btn { right: 20px; padding: 6px 12px; font-size: 12px; }
+            .race-table { min-width: 950px; }
+            .race-table th, .race-table td { padding: 10px 8px; font-size: 12px; }
+            .race-name { max-width: 200px; min-width: 140px; }
+            .scroll-hint { display: block; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏭 China Expo Finder for Leo</h1>
+        <div class="header-sub">Furniture & Home Decor Trade Shows — Curated by Molty 🦉</div>
+        <button class="info-btn" onclick="showInfo()">ℹ️ Info</button>
+    </div>
+    
+    <div id="main-view">
+        <div class="intro-box">
+            <p>
+                <strong>Find your next expo.</strong> Browse furniture and home decor trade shows across China.
+                Click on any expo name to visit the official website.
+                <em>Updated daily with new fairs from all over China.</em>
+            </p>
+        </div>
+        
+        <div class="updated">Updated: <span id="update-time">—</span> · <span id="total-stat">—</span> expos</div>
+        
+        <div class="container">
+            <div class="tabs">
+                <button class="tab active" onclick="showView('type', this)">By Category</button>
+                <button class="tab" onclick="showView('city', this)">By City</button>
+                <button class="tab" onclick="showView('month', this)">By Month</button>
+                <button class="tab" onclick="showView('all', this)">All</button>
+            </div>
+            
+            <div id="type-view" class="view active"></div>
+            <div id="city-view" class="view"></div>
+            <div id="month-view" class="view"></div>
+            <div id="all-view" class="view"></div>
+        </div>
+    </div>
+    
+    <div id="info-panel" class="info-panel">
+        <button class="close-info" onclick="hideInfo()">✕ Close</button>
+        <h2>🦉 About This Site</h2>
+        <p>Built for Leo to track furniture and home decor trade shows across China.</p>
+        <h3>What We Track</h3>
+        <ul>
+            <li>Furniture (indoor & outdoor, decorative & small)</li>
+            <li>Lighting (table, floor, decorative)</li>
+            <li>Kitchen & bathroom accessories</li>
+            <li>Decorative accessories (vases, wall art, sculptures)</li>
+        </ul>
+        <h3>Data Sources</h3>
+        <p>CIFF, Canton Fair, local expo directories, and trade show databases across China.</p>
+        <p><em>Last updated: February 12, 2026</em></p>
+    </div>
+
+    <script>
+        let expos = 
+[{"name":"Shenzhen International Furniture Fair","date_start":"2026-03-17","date_end":"2026-03-20","city":"Shenzhen","venue":"Shenzhen World Exhibition & Convention Center","expo_type":"Furniture","website":"https://www.szfurniturefair.cn"},
+{"name":"Canton Fair Phase 2","date_start":"2026-04-23","date_end":"2026-04-27","city":"Guangzhou","venue":"Canton Fair Complex","expo_type":"Home Decoration","website":"https://www.cantonfair.org.cn"},
+{"name":"Furniture China 2026 (CIFF Shanghai)","date_start":"2026-09-08","date_end":"2026-09-11","city":"Shanghai","venue":"National Exhibition and Convention Center (NECC)","expo_type":"Furniture","website":"https://www.ciff.com.cn"}]
+;
+        
+        const typeInfo = {
+            'furniture': { emoji: '🪑', label: 'Furniture', color: 'furniture' },
+            'lighting': { emoji: '💡', label: 'Lighting', color: 'lighting' },
+            'kitchen': { emoji: '🍽️', label: 'Kitchen', color: 'kitchen' },
+            'bathroom': { emoji: '🛁', label: 'Bathroom', color: 'bathroom' },
+            'decor': { emoji: '🎨', label: 'Decor', color: 'decor' }
+        };
+        
+        function showInfo() {
+            document.getElementById('main-view').style.display = 'none';
+            document.getElementById('info-panel').classList.add('active');
+        }
+        
+        function hideInfo() {
+            document.getElementById('info-panel').classList.remove('active');
+            document.getElementById('main-view').style.display = 'block';
+        }
+        
+        function formatDate(dateStr) {
+            if (!dateStr) return 'TBA';
+            try {
+                const d = new Date(dateStr);
+                if (isNaN(d)) return dateStr;
+                return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            } catch { return dateStr; }
+        }
+        
+        function getMonthYear(dateStr) {
+            if (!dateStr) return 'TBA';
+            try {
+                const d = new Date(dateStr);
+                if (isNaN(d)) return 'TBA';
+                return d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+            } catch { return 'TBA'; }
+        }
+        
+        function getExpoType(expo) {
+            const t = expo.expo_type || 'furniture';
+            return typeInfo[t] || { emoji: '🏭', label: t, color: 'furniture' };
+        }
+        
+        function createExpoRow(expo) {
+            const startDate = formatDate(expo.date_start);
+            const endDate = expo.date_end ? formatDate(expo.date_end) : '';
+            const dates = endDate && endDate !== startDate ? `${startDate} - ${endDate}` : startDate;
+            const typeInfo = getExpoType(expo);
+            const name = expo.website 
+                ? `<a href="${expo.website}" target="_blank">${expo.name}</a>` 
+                : expo.name;
+            
+            return `<tr>
+                <td class="expo-name">${name}</td>
+                <td class="dates">${dates}</td>
+                <td><span class="tag ${typeInfo.color}">${typeInfo.emoji} ${typeInfo.label}</span></td>
+                <td>${expo.city || '—'}</td>
+                <td class="venue">${expo.venue || '—'}</td>
+            </tr>`;
+        }
+        
+        function getTableHeader() {
+            return '<thead><tr>' +
+                '<th>Expo Name</th>' +
+                '<th>Dates</th>' +
+                '<th>Category</th>' +
+                '<th>City</th>' +
+                '<th>Venue</th>' +
+                '</tr></thead>';
+        }
+        
+        function createSection(title, exposList) {
+            if (exposList.length === 0) return '';
+            
+            let html = '<div class="section">' +
+                '<div class="section-header">' +
+                '<div class="section-title">' + title + '</div>' +
+                '<span class="section-count">' + exposList.length + '</span>' +
+                '</div>' +
+                '<div class="scroll-hint">← Swipe to see more →</div>' +
+                '<div class="table-container">' +
+                '<table class="expo-table">' + 
+                getTableHeader() + 
+                '<tbody>';
+            
+            exposList.forEach(expo => {
+                html += createExpoRow(expo);
+            });
+            
+            html += '</tbody></table></div></div>';
+            return html;
+        }
+        
+        function render() {
+            document.getElementById('total-stat').textContent = expos.length;
+            document.getElementById('update-time').textContent = new Date().toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }) + ' (Bangkok)';
+            
+            const byType = {};
+            expos.forEach(e => {
+                const t = e.expo_type || 'furniture';
+                if (!byType[t]) byType[t] = [];
+                byType[t].push(e);
+            });
+            
+            let typeHtml = '';
+            const typeOrder = ['furniture', 'lighting', 'kitchen', 'bathroom', 'decor'];
+            typeOrder.forEach(type => {
+                if (byType[type]) {
+                    const info = typeInfo[type] || { emoji: '🏭', label: type };
+                    typeHtml += createSection(info.emoji + ' ' + info.label, byType[type]);
+                }
+            });
+            document.getElementById('type-view').innerHTML = typeHtml || '<p>No expos found</p>';
+            
+            const byCity = {};
+            expos.forEach(e => {
+                const c = e.city || 'Unknown';
+                if (!byCity[c]) byCity[c] = [];
+                byCity[c].push(e);
+            });
+            
+            let cityHtml = '';
+            Object.keys(byCity).sort().forEach(city => {
+                cityHtml += createSection('📍 ' + city, byCity[city]);
+            });
+            document.getElementById('city-view').innerHTML = cityHtml || '<p>No expos found</p>';
+            
+            const byMonth = {};
+            expos.forEach(e => {
+                const m = getMonthYear(e.date_start);
+                if (!byMonth[m]) byMonth[m] = [];
+                byMonth[m].push(e);
+            });
+            
+            let monthHtml = '';
+            const monthOrder = Object.keys(byMonth).sort((a, b) => {
+                if (a === 'TBA') return 1;
+                if (b === 'TBA') return -1;
+                return new Date(a) - new Date(b);
+            });
+            monthOrder.forEach(month => {
+                monthHtml += createSection('📅 ' + month, byMonth[month]);
+            });
+            document.getElementById('month-view').innerHTML = monthHtml || '<p>No expos found</p>';
+            
+            const sortedExpos = [...expos].sort((a, b) => {
+                if (!a.date_start) return 1;
+                if (!b.date_start) return -1;
+                return new Date(a.date_start) - new Date(b.date_start);
+            });
+            document.getElementById('all-view').innerHTML = createSection('📋 All Expos', sortedExpos);
+        }
+        
+        function showView(view, btn) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(view + '-view').classList.add('active');
+        }
+        
+        render();
+    </script>
+</body>
+</html>
