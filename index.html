@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>China Expo Finder for Leo</title>
+    <title>Asia Expo Finder for Leo</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏭</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -211,17 +211,17 @@
 </head>
 <body>
     <div class="header">
-        <h1>🏭 China Expo Finder for Leo</h1>
-        <div class="header-sub">Furniture & Home Decor Trade Shows — Curated by Molty 🦉</div>
+        <h1>🏭 Asia Expo Finder for Leo</h1>
+        <div class="header-sub">Furniture & Home Decor Trade Shows — China, Thailand, Vietnam, Indonesia — Curated by Molty 🦉</div>
         <button class="info-btn" onclick="showInfo()">ℹ️ Info</button>
     </div>
     
     <div id="main-view">
         <div class="intro-box">
             <p>
-                <strong>Find your next expo.</strong> Browse furniture and home decor trade shows across China.
+                <strong>Find your next expo.</strong> Browse furniture and home decor trade shows across China, Thailand, Vietnam, and Indonesia.
                 Click on any expo name to visit the official website.
-                <em>Updated daily with new fairs from all over China.</em>
+                <em>Updated daily with new fairs from all over Asia.</em>
             </p>
         </div>
         
@@ -230,12 +230,14 @@
         <div class="container">
             <div class="tabs">
                 <button class="tab active" onclick="showView('type', this)">By Category</button>
+                <button class="tab" onclick="showView('country', this)">By Country</button>
                 <button class="tab" onclick="showView('city', this)">By City</button>
                 <button class="tab" onclick="showView('month', this)">By Month</button>
                 <button class="tab" onclick="showView('all', this)">All</button>
             </div>
-            
+
             <div id="type-view" class="view active"></div>
+            <div id="country-view" class="view"></div>
             <div id="city-view" class="view"></div>
             <div id="month-view" class="view"></div>
             <div id="all-view" class="view"></div>
@@ -245,7 +247,7 @@
     <div id="info-panel" class="info-panel">
         <button class="close-info" onclick="hideInfo()">✕ Close</button>
         <h2>🦉 About This Site</h2>
-        <p>Built for Leo to track furniture and home decor trade shows across China.</p>
+        <p>Built for Leo to track furniture and home decor trade shows across Asia: China, Thailand, Vietnam, and Indonesia.</p>
         <h3>What We Track</h3>
         <ul>
             <li>Furniture (indoor & outdoor, decorative & small)</li>
@@ -253,16 +255,23 @@
             <li>Kitchen & bathroom accessories</li>
             <li>Decorative accessories (vases, wall art, sculptures)</li>
         </ul>
+        <h3>Countries Covered</h3>
+        <ul>
+            <li>🇨🇳 China</li>
+            <li>🇹🇭 Thailand</li>
+            <li>🇻🇳 Vietnam</li>
+            <li>🇮🇩 Indonesia</li>
+        </ul>
         <h3>Data Sources</h3>
-        <p>CIFF, Canton Fair, local expo directories, and trade show databases across China.</p>
+        <p>CIFF, Canton Fair, local expo directories, and trade show databases across Asia.</p>
         <p><em>Last updated: February 12, 2026</em></p>
     </div>
 
     <script>
         let expos = 
-[{"name":"Shenzhen International Furniture Fair","date_start":"2026-03-17","date_end":"2026-03-20","city":"Shenzhen","venue":"Shenzhen World Exhibition & Convention Center","expo_type":"Furniture","website":"https://www.szfurniturefair.cn"},
-{"name":"Canton Fair Phase 2","date_start":"2026-04-23","date_end":"2026-04-27","city":"Guangzhou","venue":"Canton Fair Complex","expo_type":"Home Decoration","website":"https://www.cantonfair.org.cn"},
-{"name":"Furniture China 2026 (CIFF Shanghai)","date_start":"2026-09-08","date_end":"2026-09-11","city":"Shanghai","venue":"National Exhibition and Convention Center (NECC)","expo_type":"Furniture","website":"https://www.ciff.com.cn"}]
+[{"name":"Shenzhen International Furniture Fair","date_start":"2026-03-17","date_end":"2026-03-20","city":"Shenzhen","venue":"Shenzhen World Exhibition & Convention Center","country":"China","expo_type":"Furniture","website":"https://www.szfurniturefair.cn"},
+{"name":"Canton Fair Phase 2","date_start":"2026-04-23","date_end":"2026-04-27","city":"Guangzhou","venue":"Canton Fair Complex","country":"China","expo_type":"Home Decoration","website":"https://www.cantonfair.org.cn"},
+{"name":"Furniture China 2026 (CIFF Shanghai)","date_start":"2026-09-08","date_end":"2026-09-11","city":"Shanghai","venue":"National Exhibition and Convention Center (NECC)","country":"China","expo_type":"Furniture","website":"https://www.ciff.com.cn"}]
 ;
         
         const typeInfo = {
@@ -376,6 +385,36 @@
                 }
             });
             document.getElementById('type-view').innerHTML = typeHtml || '<p>No expos found</p>';
+            
+            const byCountry = {};
+            expos.forEach(e => {
+                const c = e.country || 'Unknown';
+                if (!byCountry[c]) byCountry[c] = [];
+                byCountry[c].push(e);
+            });
+            
+            const countryFlags = {
+                'China': '🇨🇳',
+                'Thailand': '🇹🇭',
+                'Vietnam': '🇻🇳',
+                'Indonesia': '🇮🇩'
+            };
+            
+            let countryHtml = '';
+            const countryOrder = ['China', 'Thailand', 'Vietnam', 'Indonesia'];
+            countryOrder.forEach(country => {
+                if (byCountry[country]) {
+                    const flag = countryFlags[country] || '🏳️';
+                    countryHtml += createSection(flag + ' ' + country, byCountry[country]);
+                }
+            });
+            // Add any other countries not in the predefined list
+            Object.keys(byCountry).sort().forEach(country => {
+                if (!countryOrder.includes(country)) {
+                    countryHtml += createSection('🏳️ ' + country, byCountry[country]);
+                }
+            });
+            document.getElementById('country-view').innerHTML = countryHtml || '<p>No expos found</p>';
             
             const byCity = {};
             expos.forEach(e => {
