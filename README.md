@@ -1,12 +1,19 @@
-# 🏭 China Expo Finder for Leo
+# 🏭 Asia Expo Finder for Leo
 
 [![Website](https://img.shields.io/badge/Website-Live-blue)](https://stigvinck.github.io/leo-china-expos/)
 
-Furniture & Home Decor Trade Shows across China — curated for Leo
+Furniture & Home Decor Trade Shows across Asia — China, Thailand, Vietnam, Indonesia — curated for Leo
 
 ## 🌐 Live Website
 
 **[https://stigvinck.github.io/leo-china-expos/](https://stigvinck.github.io/leo-china-expos/)**
+
+## Countries Covered
+
+- 🇨🇳 China
+- 🇹🇭 Thailand
+- 🇻🇳 Vietnam
+- 🇮🇩 Indonesia
 
 ## What We Track
 
@@ -18,7 +25,7 @@ Furniture & Home Decor Trade Shows across China — curated for Leo
 
 ## 🔄 Auto-Update
 
-Updated daily at 5 AM Bangkok time.
+Updated daily at 6 AM Bangkok time with self-improving search.
 
 ---
 
